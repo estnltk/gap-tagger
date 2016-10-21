@@ -1,0 +1,6 @@
+[DB]
+port=5432
+host=localhost
+user=sass
+password=
+db=gaptagger

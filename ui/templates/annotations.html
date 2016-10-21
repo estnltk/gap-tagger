@@ -1,0 +1,13 @@
+[
+{% for se in annotations %}
+    {
+    "id": {{ se.id }},
+    "sentence": "{{ se.sentence.text | escapejs }}",
+    "gap_start": "{{ se.sentence.gap_start }}",
+    "gap_end": "{{ se.sentence.gap_end }}",
+    "gap_correct":  "{{ se.gap_correct | escapejs }}",
+    "gap_variant":  "{{ se.gap_variant | escapejs }}"
+    }
+    {% if not forloop.last %},{% endif %}
+{% endfor %}
+]
