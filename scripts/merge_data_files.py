@@ -35,6 +35,7 @@ def main():
         writer.writerow("sentence gap_start gap_end variants".split())
         for i, gap_line in enumerate(gapf):
             if i < start_line - 1:
+                varf.readline()
                 continue
             if i >= n_lines + start_line - 1:
                 break

@@ -14,6 +14,7 @@ class SentenceAnnotationAdmin(admin.ModelAdmin):
 
 class SentenceAdmin(admin.ModelAdmin):
     list_display = ('sentence_as_text', 'variants',)
+    list_filter = ('corpus', )
 
     def sentence_as_text(self, obj):
         return str(obj)

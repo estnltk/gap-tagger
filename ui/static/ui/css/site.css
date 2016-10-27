@@ -27,11 +27,12 @@
     justify-content: center;
 }
 
-#sentence { max-width: 700px; }
+#sentence { max-width: 700px; line-height: 33px;}
 
 #sentence .snt-gap {
     background-color: white;
-    padding: 0 7px;
+    padding: 7px 20px;
+    margin: 0 10px;
 }
 
 #buttons {
