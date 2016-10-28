@@ -209,7 +209,6 @@ function Controller() {
         self.pick_next_sentence();
     };
     self.set_both_variants_fit = function (do_fit) {
-        console.log(do_fit);
         self.state.set_both_variants_fit(do_fit);
     };
 }
