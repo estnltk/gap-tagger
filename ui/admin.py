@@ -5,8 +5,8 @@ from ui.models import *
 
 
 class SentenceAnnotationAdmin(admin.ModelAdmin):
-    list_display = ('variant_txt', 'variant', 'variant_selected', 'time', 'annotator', 'sentence')
-    list_filter = ('annotator', 'sentence__corpus', 'variant_selected')
+    list_display = ('variant_txt', 'variant', 'variant_selected', 'both_variants_fit', 'time', 'annotator', 'sentence')
+    list_filter = ('annotator', 'sentence__corpus', 'variant_selected', 'both_variants_fit')
 
     def variant_txt(self, obj):
         return obj.sentence.variants[obj.variant]

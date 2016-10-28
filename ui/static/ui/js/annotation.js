@@ -31,8 +31,22 @@ function View() {
     var self = this;
     self.set_controller = function (controller) {
         self.controller = controller;
-        $('.btn-variant').click(controller.annotate_sentence);
-        $('#btn-skip').click(controller.skip_sentence);
+        $('.btn-variant').click(function(){
+            $('#variant-btn-both').removeClass("active").removeClass("focus");
+            controller.annotate_sentence();
+        });
+        $('#variant-btn-both').click(function(){
+            var btn = $(this);
+            setTimeout(function() {
+                if (btn.hasClass("active")) {
+                    self.controller.set_both_variants_fit(true);
+                }
+                else {
+                    self.controller.set_both_variants_fit(false);
+                    btn.removeClass("focus");
+                }
+            }, 20);
+        });
         $('#btn-timer').click(function () {
             if ($('#btn-timer').attr("data-action") == "resume") {
                 $('#btn-timer .glyphicon').removeClass('glyphicon-play');
@@ -58,9 +72,12 @@ function View() {
                 btn.addClass("active");
                 btn.trigger("click");
                 setTimeout(function () {
-                    btn.removeClass("active");
+                    btn.removeClass("active").removeClass("focus");
                 }, 150);
             }
+
+            if (e.which == 115) // s
+                $('#variant-btn-both').trigger("click");
         });
     };
     self.update = function (state) {
@@ -107,6 +124,9 @@ function State(sentences, cur_snt) {
     };
     self.is_last_sentence = function () {
         return self.cur_snt == self.sentences.length - 1;
+    };
+    self.set_both_variants_fit = function(do_fit){
+        self.sentences[self.cur_snt]["both_variants_fit"] = do_fit;
     };
     self.annotate_sentence = function (correct_variant_selected, time) {
         var snt = self.sentences[self.cur_snt];
@@ -160,6 +180,7 @@ function Controller() {
                 return {
                     "id": s['id'],
                     "correct_variant_selected": s["correct_variant_selected"],
+                    "both_variants_fit": s["both_variants_fit"] == true,
                     "time": s["time"],
                     "corpus_id": get_corpus_id_from_url()
                 };
@@ -187,11 +208,9 @@ function Controller() {
         self.state.annotate_sentence(is_correct, self.timer.milliseconds);
         self.pick_next_sentence();
     };
-    self.skip_sentence = function () {
-        self.timer.pause();
-        self.view.update_time(0);
-        self.state.get_current_sentence()["time"] = self.timer.milliseconds;
-        self.pick_next_sentence();
+    self.set_both_variants_fit = function (do_fit) {
+        console.log(do_fit);
+        self.state.set_both_variants_fit(do_fit);
     };
 }
 

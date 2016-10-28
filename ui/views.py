@@ -62,6 +62,7 @@ def submit_sentences_view(request):
         {
             "id": 1,
             "correct_variant_selected": true,
+            "both_variants_fit": true,
             "time": 10,
             "corpus_id": 35
         },
@@ -74,8 +75,9 @@ def submit_sentences_view(request):
     for snt in sentences:
         sa = SentenceAnnotation(id=snt['id'],
                                 variant_selected=not snt['correct_variant_selected'],
+                                both_variants_fit=snt['both_variants_fit'],
                                 time=snt['time'])
-        sa.save(force_update=True, update_fields=['variant_selected', 'time'])
+        sa.save(force_update=True, update_fields=['variant_selected', 'time', 'both_variants_fit'])
 
     request.POST = request.POST.copy()
     request.POST['corpus_id'] = int(sentences[0]["corpus_id"])

@@ -37,5 +37,6 @@ class SentenceAnnotation(models.Model):
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE, db_index=True)
     variant = models.PositiveSmallIntegerField()
     variant_selected = models.NullBooleanField()
+    both_variants_fit = models.NullBooleanField()
     time = models.IntegerField(null=True)
     order = models.IntegerField(db_index=True)
