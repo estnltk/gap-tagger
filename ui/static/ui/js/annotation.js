@@ -31,21 +31,10 @@ function View() {
     var self = this;
     self.set_controller = function (controller) {
         self.controller = controller;
-        $('.btn-variant').click(function(){
-            $('#variant-btn-both').removeClass("active").removeClass("focus");
-            controller.annotate_sentence();
-        });
-        $('#variant-btn-both').click(function(){
-            var btn = $(this);
-            setTimeout(function() {
-                if (btn.hasClass("active")) {
-                    self.controller.set_both_variants_fit(true);
-                }
-                else {
-                    self.controller.set_both_variants_fit(false);
-                    btn.removeClass("focus");
-                }
-            }, 20);
+        $('.btn-variant').click(function () {
+            var is_correct = $(this).attr("data-correct") == "true";
+            var both_fit = $(this).attr("data-both-fit") == "true";
+            controller.annotate_sentence(is_correct, both_fit);
         });
         $('#btn-timer').click(function () {
             if ($('#btn-timer').attr("data-action") == "resume") {
@@ -65,7 +54,11 @@ function View() {
             var btn;
             if (e.which == 97) // a
                 btn = $('#variant-btn-1');
+            else if (e.which == 115) // s
+                btn = $('#variant-btn-both-1');
             else if (e.which == 100) // d
+                btn = $('#variant-btn-both-2');
+            else if (e.which == 102) // f
                 btn = $('#variant-btn-2');
 
             if (btn != undefined) {
@@ -75,9 +68,6 @@ function View() {
                     btn.removeClass("active").removeClass("focus");
                 }, 150);
             }
-
-            if (e.which == 115) // s
-                $('#variant-btn-both').trigger("click");
         });
     };
     self.update = function (state) {
@@ -85,17 +75,18 @@ function View() {
         var marked_sentence = annotate_entity_in_sentence(snt['sentence'], snt['gap_start'], snt['gap_end']);
         $('#sentence').html(marked_sentence);
 
-        var btn1, btn2;
         if (Math.random() < 0.5) {
-            btn1 = $('#variant-btn-1');
-            btn2 = $('#variant-btn-2');
+            $('#variant-btn-1').attr('data-correct', true).find('.lbl').html(snt['gap_correct']);
+            $('#variant-btn-2').attr('data-correct', false).find('.lbl').html(snt['gap_variant']);
+            $('#variant-btn-both-1').attr({'data-correct': true, 'data-both-fit': true});
+            $('#variant-btn-both-2').attr({'data-correct': false, 'data-both-fit': true});
         }
         else {
-            btn1 = $('#variant-btn-2');
-            btn2 = $('#variant-btn-1');
+            $('#variant-btn-1').attr('data-correct', false).find('.lbl').html(snt['gap_variant']);
+            $('#variant-btn-2').attr('data-correct', true).find('.lbl').html(snt['gap_correct']);
+            $('#variant-btn-both-1').attr({'data-correct': false, 'data-both-fit': true});
+            $('#variant-btn-both-2').attr({'data-correct': true, 'data-both-fit': true});
         }
-        btn1.attr('data-correct', true).find('.lbl').html(snt['gap_correct']);
-        btn2.attr('data-correct', false).find('.lbl').html(snt['gap_variant']);
     };
     self.update_time = function (msecs) {
         /* Update displayed time every second */
@@ -125,12 +116,10 @@ function State(sentences, cur_snt) {
     self.is_last_sentence = function () {
         return self.cur_snt == self.sentences.length - 1;
     };
-    self.set_both_variants_fit = function(do_fit){
-        self.sentences[self.cur_snt]["both_variants_fit"] = do_fit;
-    };
-    self.annotate_sentence = function (correct_variant_selected, time) {
+    self.annotate_sentence = function (is_correct_variant_selected, both_fit, time) {
         var snt = self.sentences[self.cur_snt];
-        snt["correct_variant_selected"] = correct_variant_selected;
+        snt["correct_variant_selected"] = is_correct_variant_selected;
+        snt["both_variants_fit"] = both_fit;
         snt["time"] = time;
     };
 }
@@ -201,11 +190,10 @@ function Controller() {
             self.timer.reset();
         }
     };
-    self.annotate_sentence = function () {
+    self.annotate_sentence = function (is_correct, both_fit) {
         self.timer.pause();
         self.view.update_time(0);
-        var is_correct = $(this).attr("data-correct") == "true";
-        self.state.annotate_sentence(is_correct, self.timer.milliseconds);
+        self.state.annotate_sentence(is_correct, both_fit, self.timer.milliseconds);
         self.pick_next_sentence();
     };
     self.set_both_variants_fit = function (do_fit) {
