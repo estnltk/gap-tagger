@@ -35,8 +35,8 @@ class Sentence(models.Model):
 class SentenceAnnotation(models.Model):
     annotator = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     sentence = models.ForeignKey(Sentence, on_delete=models.CASCADE, db_index=True)
-    variant = models.PositiveSmallIntegerField()
-    variant_selected = models.NullBooleanField()
+    variant = models.PositiveSmallIntegerField(help_text='Index of the variant in sentence.variants array')
+    variant_selected = models.NullBooleanField(help_text='Null is annotation is not yet processed by annotator')
     both_variants_fit = models.NullBooleanField()
     time = models.IntegerField(null=True)
     order = models.IntegerField(db_index=True)
